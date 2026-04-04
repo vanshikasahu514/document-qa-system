@@ -179,3 +179,14 @@ Tune these in `qa/qa_engine.py`:
 ##  Privacy
 
 Everything runs **100% locally**. No data is sent to any external server or API.
+
+## 📸 Screenshots
+
+### Home Page
+![Home](screenshots/1_home.png)
+
+### After Upload
+![Upload](screenshots/2_upload.png)
+
+### Answer
+![Answer](screenshots/3_answer.png) 
