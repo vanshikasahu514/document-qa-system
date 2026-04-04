@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DocQA — Ask Your PDF</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;500&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'qa/css/style.css' %}">
+</head>
+<body>
+  <div class="noise"></div>
+
+  <header>
+    <div class="logo">Doc<span>QA</span></div>
+    <p class="tagline">Django-powered · 100% local · Ask anything from your PDF</p>
+  </header>
+
+  <main>
+    <!-- Upload Panel -->
+    <section class="panel upload-panel">
+      <div class="panel-label">01 / UPLOAD</div>
+      <h2>Drop your PDF here</h2>
+
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-icon">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="4" width="36" height="48" rx="3" stroke="currentColor" stroke-width="2.5"/>
+            <path d="M32 4v16h16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M24 36l8-8 8 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32 28v16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <p class="drop-text">Drag & drop PDF<br><span>or click to browse</span></p>
+        <input type="file" id="fileInput" accept=".pdf" hidden>
+      </div>
+
+      <div class="upload-progress" id="uploadProgress" hidden>
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <span id="progressLabel">Processing document…</span>
+      </div>
+
+      {% if doc_loaded %}
+      <div class="doc-badge" id="docBadge">
+        <div class="badge-icon">✓</div>
+        <div class="badge-info">
+          <strong id="docName">{{ doc_name }}</strong>
+          <span id="docMeta">{{ num_words|default:"—" }} words · {{ num_chunks|default:"—" }} chunks</span>
+        </div>
+        <button class="change-btn" onclick="resetDocument()">Change</button>
+      </div>
+      {% else %}
+      <div class="doc-badge" id="docBadge" hidden>
+        <div class="badge-icon">✓</div>
+        <div class="badge-info">
+          <strong id="docName"></strong>
+          <span id="docMeta"></span>
+        </div>
+        <button class="change-btn" onclick="resetDocument()">Change</button>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- QA Panel -->
+    <section class="panel qa-panel">
+      <div class="panel-label">02 / ASK</div>
+      <h2>Ask your document</h2>
+
+      <div class="chat-window" id="chatWindow">
+        {% if doc_loaded %}
+        <div class="sys-msg">
+          📄 <strong>{{ doc_name }}</strong> is ready. Ask me anything about it!
+        </div>
+        {% else %}
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">💬</div>
+          <p>Upload a PDF to start asking questions</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="input-row">
+        <input type="text" id="questionInput" placeholder="What is this document about?"
+               {% if not doc_loaded %}disabled{% endif %}/>
+        <button id="askBtn" onclick="askQuestion()"
+                {% if not doc_loaded %}disabled{% endif %}>Ask</button>
+      </div>
+      <div class="hint">Press Enter to ask · Answers sourced only from your document</div>
+    </section>
+  </main>
+
+  <!-- Pass Django context to JS -->
+  <script>
+    const DJANGO_CTX = {
+      docLoaded: {{ doc_loaded|yesno:"true,false" }},
+      docId: "{{ doc_id|default:'' }}",
+      csrfToken: "{{ csrf_token }}",
+      uploadUrl: "{% url 'qa:upload' %}",
+      askUrl: "{% url 'qa:ask' %}",
+      docInfoUrl: "{% url 'qa:doc_info' %}"
+    };
+  </script>
+  <script src="{% static 'qa/js/app.js' %}"></script>
+</body>
+</html>

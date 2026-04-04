@@ -1,0 +1,31 @@
+# Virtual environment
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django
+*.sqlite3
+media/
+staticfiles/
+
+# HuggingFace model cache (hundreds of MBs - never upload these)
+.cache/
+
+# Uploads folder (user uploaded PDFs - not your code)
+uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Environment variables
+.env
